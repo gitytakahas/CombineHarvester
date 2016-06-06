@@ -17,10 +17,16 @@ parser.add_argument('--output', '-o', default='./output/LIMITS', help="""
     Output directory""")
 
 args = parser.parse_args()
-
-shapes_dir = os.environ['CMSSW_BASE'] + '/src/CombineHarvester/HIG15007/shapes'
-
 cb = ch.CombineHarvester()
+
+##########################################################################
+# Set input shape files
+##########################################################################
+shapefile = '/afs/cern.ch/user/y/ytakahas/work/Combine/CMSSW_7_1_5/src/CombineHarvester/HIG15007/shapes/datacard_sm_svfit_mass.root'
+#shapefile = '/afs/cern.ch/user/y/ytakahas/work/Combine/CMSSW_7_1_5/src/CombineHarvester/HIG15007/shapes/datacard_sm_mva2.root'
+#shapefile = '/afs/cern.ch/user/y/ytakahas/work/Combine/CMSSW_7_1_5/src/CombineHarvester/HIG15007/shapes/datacard_sm_mva2div1.root'
+#shapefile = '/afs/cern.ch/user/y/ytakahas/work/Combine/CMSSW_7_1_5/src/CombineHarvester/HIG15007/shapes/datacard_sm_mva2_separatetraining.root'
+#shapefile = '/afs/cern.ch/user/y/ytakahas/work/Combine/CMSSW_7_1_5/src/CombineHarvester/HIG15007/shapes/datacard_sm_mva2div1_separatetraining.root'
 
 ##########################################################################
 # Set the processes and categories
@@ -32,23 +38,32 @@ bkg_procs = {
 }
 
 bins = {
-    'mt': [(0, 'mt_0jet'), (1, 'mt_low_1jet'), (2, 'mt_high_1jet'), (3, 'mt_vbf')],
+    'mt': [(0, 'mt_0jet_medium'),
+           (1, 'mt_0jet_high'), 
+           (2, 'mt_1jet_medium'),
+           (3, 'mt_1jet_high_lowhiggspt'),
+           (4, 'mt_1jet_high_highhiggspt'),
+           (5, 'mt_vbf')]
+
+    'mt': [ #(0, 'mt_0jet_medium')]
+#           (1, 'mt_0jet_high')]
+#           (2, 'mt_1jet_medium')]
+#           (3, 'mt_1jet_high_lowhiggspt')]
+#           (4, 'mt_1jet_high_highhiggspt')]
+#           (5, 'mt_vbf')]
+
+
+#    'mt':[
+#        (0, 'mt_0jet_lowmva0'), 
+#        (1, 'mt_0jet_highmva0'), 
+#        (2, 'mt_1jet_novbf_lowmva0'), 
+#        (3, 'mt_1jet_novbf_highmva0'), 
+#        (4, 'mt_vbf_lowmva0'), 
+#        (5, 'mt_vbf_highmva0'), 
+#        ]
 }
 
 channels = ['mt']
-
-##########################################################################
-# Set input shape files
-##########################################################################
-files = {
-    'mt': {
-        'CERN':'datacard_sm_svfit_mass.root'
-    },
-}
-
-inputs = {
-    'mt': 'CERN',
-}
 
 ##########################################################################
 # Create CH entries and load shapes
@@ -64,9 +79,11 @@ for chn in channels:
 # Define systematic uncertainties
 ##########################################################################
 
+signal = cb.cp().signals().process_set()
+
 cb.cp().AddSyst(
     cb, 'CMS_eff_m', 'lnN', ch.SystMap('channel', 'process')
-        (['mt'], ['ZTT', 'ZLL', 'ZL', 'ZJ', 'TT', 'VV'], 1.03))
+        (['mt'], signal + ['ZTT', 'ZLL', 'ZL', 'ZJ', 'TT', 'VV'], 1.03))
 
 
 # Only create the eff_t lnN if we want this to be constrained,
@@ -76,20 +93,14 @@ cb.cp().AddSyst(
 
 cb.cp().AddSyst(
     cb, 'CMS_eff_t', 'lnN', ch.SystMap('channel', 'process')
-    (['mt'], ['ZTT', 'TT', 'VV'], 1.05))
-
-# Always create the terms that decorrelate the channels
-cb.cp().AddSyst(
-    cb, 'CMS_eff_t_$CHANNEL', 'lnN', ch.SystMap('channel', 'process')
-        (['mt'], ['ZTT', 'TT', 'VV'], 1.03))
-
+    (['mt'], signal + ['ZTT', 'TT', 'VV'], 1.05))
 
 # Split tau energy scale uncertainty into part ("CMS_scale_t") that is correlated between channels
 # and part ("CMS_scale_t_et", "CMS_scale_t_mt", "CMS_scale_t_tt") that is uncorrelated
 
-#cb.cp().AddSyst(
-#    cb, 'CMS_scale_t_$CHANNEL_$ERA', 'shape', ch.SystMap('channel', 'process')
-#        (['mt'], ['ZTT'], 1.0))
+cb.cp().AddSyst(
+    cb, 'CMS_scale_t_$CHANNEL_$ERA', 'shape', ch.SystMap('channel', 'process')
+        (['mt'], signal + ['ZTT'], 1.0))
 
 cb.cp().AddSyst(
     cb, 'CMS_$ANALYSIS_boson_scale_met', 'lnN', ch.SystMap('channel', 'process')
@@ -144,13 +155,20 @@ cb.cp().process(['ZJ']).AddSyst(
 
 cb.cp().AddSyst(
     cb, 'lumi_$ERA', 'lnN', ch.SystMap('channel', 'process')
-        (['mt'],  ['ZTT', 'ZL', 'ZJ', 'TT', 'VV'],        1.027))
+        (['mt'],  signal + ['ZTT', 'ZL', 'ZJ', 'TT', 'VV'],        1.027))
 
 # Signal acceptance
-cb.cp().process(['ZTT']).AddSyst(
-    cb, 'CMS_$ANALYSIS_pdf_$ERA', 'lnN', ch.SystMap()(1.015))
-cb.cp().process(['ZTT']).AddSyst(
-    cb, 'CMS_$ANALYSIS_QCDscale_$ERA', 'lnN', ch.SystMap()(1.005))
+cb.cp().process(['HiggsGGH']).AddSyst(
+    cb, 'CMS_$ANALYSIS_pdf_$ERA', 'lnN', ch.SystMap()(1.031))
+
+cb.cp().process(['HiggsVBF']).AddSyst(
+    cb, 'CMS_$ANALYSIS_pdf_$ERA', 'lnN', ch.SystMap()(1.021))
+
+cb.cp().process(['HiggsGGH']).AddSyst(
+    cb, 'CMS_$ANALYSIS_QCDscale_$ERA', 'lnN', ch.SystMap()(1.081))
+
+cb.cp().process(['HiggsVBF']).AddSyst(
+    cb, 'CMS_$ANALYSIS_QCDscale_$ERA', 'lnN', ch.SystMap()(1.004))
 
 
 ##########################################################################
@@ -158,35 +176,10 @@ cb.cp().process(['ZTT']).AddSyst(
 ##########################################################################
 for chn in channels:
     cb.cp().backgrounds().ExtractShapes(
-        '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn][inputs[chn]]), 
-        '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
+        shapefile, '$BIN/$PROCESS', '$BIN/$PROCESS_$SYSTEMATIC')
 
     cb.cp().signals().ExtractShapes(
-        '%s/%s/%s' % (shapes_dir, inputs[chn], files[chn][inputs[chn]]), 
-        '$BIN/$PROCESS$MASS', '$BIN/$PROCESS$MASS_$SYSTEMATIC')
-
-
-
-##########################################################################
-# Tau ES modifcations
-##########################################################################
-# Now we manipulate the tau ES a bit
-# First rename to a common 'CMS_scale_t'
-cb.ForEachSyst(lambda sys: RenameSyst(cb, sys, 'CMS_scale_t', 'CMS_scale_t'))
-
-# Then scale the constraint to 2.5%/3%:
-tau_es_scaling = 2.5/3.0
-
-cb.cp().syst_name(['CMS_scale_t']).ForEachSyst(lambda sys: sys.set_scale(tau_es_scaling))
-
-
-def ChannelSpecificTauES(sys, scale=1.0):
-    sys.set_name('CMS_scale_t_' + sys.channel())
-    sys.set_scale(scale)
-
-# Now clone back to a channel specific one scaled to 1.5%
-ch.CloneSysts(cb.cp().syst_name(['CMS_scale_t']), cb,
-              lambda sys: ChannelSpecificTauES(sys, 0.5))
+        shapefile, '$BIN/$PROCESS$MASS', '$BIN/$PROCESS$MASS_$SYSTEMATIC')
 
 ##########################################################################
 # Create bin-by-bin
@@ -210,10 +203,6 @@ cb.SetGroup('syst', ['.*'])
 cb.SetGroup('lumi', ['lumi_.*'])
 cb.RemoveGroup('syst', ['lumi_.*'])
 cb.RemoveGroup('allsyst', ['lumi_.*'])
-
-# Then tauid, and remove it only from syst
-cb.SetGroup('tauid', ['CMS_eff_t'])
-cb.RemoveGroup('syst', ['CMS_eff_t'])
 
 # Now we can split into:
 #    - stat + syst + tauid + lumi   ..or..
