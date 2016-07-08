@@ -1,0 +1,45 @@
+CMS_eff_m
+Best fit CMS_eff_m: 6.95906  -13.9591/+0.0409368  (68% CL)
+
+CMS_eff_t
+Best fit CMS_eff_t: 2.06327  -7.08102/+2.22136  (68% CL)
+
+CMS_ztt_boson_reso_met
+Best fit CMS_ztt_boson_reso_met: -5.63725  -1.36275/+12.6372  (68% CL)
+
+CMS_ztt_boson_scale_met
+Best fit CMS_ztt_boson_scale_met: -5.63496  -1.36504/+12.635  (68% CL)
+
+CMS_ztt_ewkTop_reso_met
+Best fit CMS_ztt_ewkTop_reso_met: 4.02793  -11.0279/+2.97207  (68% CL)
+
+CMS_ztt_ewkTop_scale_met
+Best fit CMS_ztt_ewkTop_scale_met: 7  -14/+2.73069e-10  (68% CL)
+
+CMS_ztt_qcdSyst_mt_13TeV
+Best fit CMS_ztt_qcdSyst_mt_13TeV: 6.99987  -5.93302/+0.00013396  (68% CL)
+
+CMS_ztt_rate_mFakeTau_13TeV
+Best fit CMS_ztt_rate_mFakeTau_13TeV: 1.7703  -1.17278/+0.595839  (68% CL)
+
+CMS_ztt_ttjExtrapol_mt_13TeV
+Best fit CMS_ztt_ttjExtrapol_mt_13TeV: 6.99926  -13.9993/+0.000737058  (68% CL)
+
+CMS_ztt_ttjXsec_13TeV
+Best fit CMS_ztt_ttjXsec_13TeV: 6.99975  -13.9997/+0.000251918  (68% CL)
+
+CMS_ztt_vvXsec_13TeV
+Best fit CMS_ztt_vvXsec_13TeV: 6.97572  -13.9757/+0.0242841  (68% CL)
+
+CMS_ztt_wjExtrapol_mt_13TeV
+Best fit CMS_ztt_wjExtrapol_mt_13TeV: -6.99781  -0.00219262/+5.69344  (68% CL)
+
+CMS_ztt_zjFakeTau_13TeV
+Best fit CMS_ztt_zjFakeTau_13TeV: -6.97738  -0.0226215/+10.9121  (68% CL)
+
+CMS_ztt_zjXsec_13TeV
+Best fit CMS_ztt_zjXsec_13TeV: -4.58691  -2.41309/+7.9429  (68% CL)
+
+lumi_13TeV
+Best fit lumi_13TeV: 6.98297  -13.4247/+0.0170255  (68% CL)
+
